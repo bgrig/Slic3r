@@ -125,37 +125,37 @@ sub new {
         $self->{canvas3D}->set_on_double_click($on_double_click);
         $self->{canvas3D}->set_on_right_click(sub { $on_right_click->($self->{canvas3D}, @_); });
         $self->{canvas3D}->set_on_instances_moved($on_instances_moved);
-        $self->{canvas3D}->on_viewport_changed(sub {
-            $self->{preview3D}->canvas->set_viewport_from_scene($self->{canvas3D});
-        });
+        # $self->{canvas3D}->on_viewport_changed(sub {
+        #     $self->{preview3D}->canvas->set_viewport_from_scene($self->{canvas3D});
+        # });
     }
     
     # Initialize 2D preview canvas
-    $self->{canvas} = Slic3r::GUI::Plater::2D->new($self->{preview_notebook}, wxDefaultSize, $self->{objects}, $self->{model}, $self->{config});
-    $self->{preview_notebook}->AddPage($self->{canvas}, '2D');
-    $self->{canvas}->on_select_object($on_select_object);
-    $self->{canvas}->on_double_click($on_double_click);
-    $self->{canvas}->on_right_click(sub { $on_right_click->($self->{canvas}, @_); });
-    $self->{canvas}->on_instances_moved($on_instances_moved);
+    # $self->{canvas} = Slic3r::GUI::Plater::2D->new($self->{preview_notebook}, wxDefaultSize, $self->{objects}, $self->{model}, $self->{config});
+    # $self->{preview_notebook}->AddPage($self->{canvas}, '2D');
+    # $self->{canvas}->on_select_object($on_select_object);
+    # $self->{canvas}->on_double_click($on_double_click);
+    # $self->{canvas}->on_right_click(sub { $on_right_click->($self->{canvas}, @_); });
+    # $self->{canvas}->on_instances_moved($on_instances_moved);
     
     # Initialize 3D toolpaths preview
-    $self->{preview3D_page_idx} = -1;
-    if ($Slic3r::GUI::have_OpenGL) {
-        $self->{preview3D} = Slic3r::GUI::Plater::3DPreview->new($self->{preview_notebook}, $self->{print});
-        $self->{preview3D}->canvas->on_viewport_changed(sub {
-            $self->{canvas3D}->set_viewport_from_scene($self->{preview3D}->canvas);
-        });
-        $self->{preview_notebook}->AddPage($self->{preview3D}, 'Preview');
-        $self->{preview3D_page_idx} = $self->{preview_notebook}->GetPageCount-1;
-    }
+    # $self->{preview3D_page_idx} = -1;
+    # if ($Slic3r::GUI::have_OpenGL) {
+    #     $self->{preview3D} = Slic3r::GUI::Plater::3DPreview->new($self->{preview_notebook}, $self->{print});
+    #     $self->{preview3D}->canvas->on_viewport_changed(sub {
+    #         $self->{canvas3D}->set_viewport_from_scene($self->{preview3D}->canvas);
+    #     });
+    #     $self->{preview_notebook}->AddPage($self->{preview3D}, 'Preview');
+    #     $self->{preview3D_page_idx} = $self->{preview_notebook}->GetPageCount-1;
+    # }
     
     # Initialize toolpaths preview
-    $self->{toolpaths2D_page_idx} = -1;
-    if ($Slic3r::GUI::have_OpenGL) {
-        $self->{toolpaths2D} = Slic3r::GUI::Plater::2DToolpaths->new($self->{preview_notebook}, $self->{print});
-        $self->{preview_notebook}->AddPage($self->{toolpaths2D}, 'Layers');
-        $self->{toolpaths2D_page_idx} = $self->{preview_notebook}->GetPageCount-1;
-    }
+    # $self->{toolpaths2D_page_idx} = -1;
+    # if ($Slic3r::GUI::have_OpenGL) {
+    #     $self->{toolpaths2D} = Slic3r::GUI::Plater::2DToolpaths->new($self->{preview_notebook}, $self->{print});
+    #     $self->{preview_notebook}->AddPage($self->{toolpaths2D}, 'Layers');
+    #     $self->{toolpaths2D_page_idx} = $self->{preview_notebook}->GetPageCount-1;
+    # }
     
     EVT_NOTEBOOK_PAGE_CHANGED($self, $self->{preview_notebook}, sub {
         wxTheApp->CallAfter(sub {
@@ -195,8 +195,8 @@ sub new {
         $self->{htoolbar}->AddTool(TB_SPLIT, "Split", Wx::Bitmap->new($Slic3r::var->("shape_ungroup.png"), wxBITMAP_TYPE_PNG), '');
         $self->{htoolbar}->AddTool(TB_CUT, "Cut…", Wx::Bitmap->new($Slic3r::var->("package.png"), wxBITMAP_TYPE_PNG), '');
         $self->{htoolbar}->AddSeparator;
-        $self->{htoolbar}->AddTool(TB_SETTINGS, "Settings…", Wx::Bitmap->new($Slic3r::var->("cog.png"), wxBITMAP_TYPE_PNG), '');
-        $self->{htoolbar}->AddTool(TB_LAYERS, "Layer heights…", Wx::Bitmap->new($Slic3r::var->("variable_layer_height.png"), wxBITMAP_TYPE_PNG), '');
+        # $self->{htoolbar}->AddTool(TB_SETTINGS, "Settings…", Wx::Bitmap->new($Slic3r::var->("cog.png"), wxBITMAP_TYPE_PNG), '');
+        # $self->{htoolbar}->AddTool(TB_LAYERS, "Layer heights…", Wx::Bitmap->new($Slic3r::var->("variable_layer_height.png"), wxBITMAP_TYPE_PNG), '');
     } else {
         my %tbar_buttons = (
             add             => "Add…",
@@ -210,18 +210,18 @@ sub new {
             changescale     => "Scale…",
             split           => "Split",
             cut             => "Cut…",
-            layers          => "Layer heights…",
-            settings        => "Settings…",
+            # layers          => "Layer heights…",
+            # settings        => "Settings…",
         );
         $self->{btoolbar} = Wx::BoxSizer->new(wxHORIZONTAL);
-        for (qw(add remove reset arrange increase decrease rotate45ccw rotate45cw changescale split cut layers settings)) {
+        for (qw(add remove reset arrange increase decrease rotate45ccw rotate45cw changescale split cut)) {
             $self->{"btn_$_"} = Wx::Button->new($self, -1, $tbar_buttons{$_}, wxDefaultPosition, wxDefaultSize, wxBU_EXACTFIT);
             $self->{btoolbar}->Add($self->{"btn_$_"});
         }
     }
 
     # right pane buttons
-    $self->{btn_export_gcode} = Wx::Button->new($self, -1, "Export G-code…", wxDefaultPosition, [-1, 30], wxBU_LEFT);
+    #$self->{btn_export_gcode} = Wx::Button->new($self, -1, "Export G-code…", wxDefaultPosition, [-1, 30], wxBU_LEFT);
     $self->{btn_print} = Wx::Button->new($self, -1, "Print…", wxDefaultPosition, [-1, 30], wxBU_LEFT);
     $self->{btn_send_gcode} = Wx::Button->new($self, -1, "Send to printer", wxDefaultPosition, [-1, 30], wxBU_LEFT);
     $self->{btn_export_stl} = Wx::Button->new($self, -1, "Export STL…", wxDefaultPosition, [-1, 30], wxBU_LEFT);
@@ -345,7 +345,7 @@ sub new {
         });
     }
     
-    $self->{canvas}->update_bed_size;
+    #$self->{canvas}->update_bed_size;
     if ($self->{canvas3D}) {
         $self->{canvas3D}->update_bed_size;
         $self->{canvas3D}->zoom_to_bed;
@@ -608,21 +608,21 @@ sub _on_change_combobox {
 }
 
 sub _on_select_preset {
-	my ($self, $group) = @_;
-	
-	my @presets = $self->selected_presets($group);
-	
-	my $s_presets = $Slic3r::GUI::Settings->{presets};
-	my $changed = !$s_presets->{$group} || $s_presets->{$group} ne $presets[0]->name;
+    my ($self, $group) = @_;
+    
+    my @presets = $self->selected_presets($group);
+    
+    my $s_presets = $Slic3r::GUI::Settings->{presets};
+    my $changed = !$s_presets->{$group} || $s_presets->{$group} ne $presets[0]->name;
     $s_presets->{$group} = $presets[0]->name;
     $s_presets->{"${group}_${_}"} = $presets[$_]->name for 1..$#presets;
-	
-	wxTheApp->save_settings;
-	
-	# Ignore overrides in the plater, we only care about the preset configs.
-	my $config = $self->config(1);
-	
-	$self->on_extruders_change(scalar @{$config->get('nozzle_diameter')});
+    
+    wxTheApp->save_settings;
+    
+    # Ignore overrides in the plater, we only care about the preset configs.
+    my $config = $self->config(1);
+    
+    $self->on_extruders_change(scalar @{$config->get('nozzle_diameter')});
     
     if ($group eq 'print') {
         my $o_config = $self->{settings_override_config};
@@ -1020,10 +1020,10 @@ sub undo {
         my $objects_count = $#{$operation->{attributes}->[0]->objects} + 1;
         my $identifier_start = $operation->{attributes}->[1];
         for (my $identifier = $identifier_start; $identifier < $objects_count + $identifier_start; $identifier++) {
-			my $obj_idx = $self->get_object_index($identifier);
+            my $obj_idx = $self->get_object_index($identifier);
             $self->remove($obj_idx, 'true');
         }
-	}
+    }
 }
 
 sub redo {
@@ -1129,8 +1129,8 @@ sub add {
     
     # Check if no objects are added.
     if ($start_object_id == $self->{object_identifier}) {
-		return;
-	}
+        return;
+    }
     
     # Save the added objects.
     my $new_model = $self->{model}->new;
@@ -1138,7 +1138,7 @@ sub add {
     # Get newly added objects count.
     my $new_objects_count = $self->{object_identifier} - $start_object_id;
     for (my $i_object = $start_object_id; $i_object < $new_objects_count + $start_object_id; $i_object++){
-			my $object_index =  $self->get_object_index($i_object);
+            my $object_index =  $self->get_object_index($i_object);
             $new_model->add_object($self->{model}->get_object($object_index));
     }
 
@@ -1788,13 +1788,13 @@ sub config_changed {
     
     # Apply changes to the plater-specific config options.
     foreach my $opt_key (@{$self->{config}->diff($config)}) {
-	    # Ignore overrides. No need to set them in our config; we'll use them directly below.
-	    next if $opt_key eq 'overrides';
-	    
+        # Ignore overrides. No need to set them in our config; we'll use them directly below.
+        next if $opt_key eq 'overrides';
+        
         $self->{config}->set($opt_key, $config->get($opt_key));
         
         if ($opt_key eq 'bed_shape') {
-            $self->{canvas}->update_bed_size;
+            #$self->{canvas}->update_bed_size;
             $self->{canvas3D}->update_bed_size if $self->{canvas3D};
             $self->{preview3D}->set_bed_shape($self->{config}->bed_shape)
                 if $self->{preview3D};
@@ -2625,13 +2625,13 @@ sub object_cut_dialog {
     }
     
     my $dlg = Slic3r::GUI::Plater::ObjectCutDialog->new($self,
-		object              => $self->{objects}[$obj_idx],
-		model_object        => $self->{model}->objects->[$obj_idx],
-	);
-	return unless $dlg->ShowModal == wxID_OK;
-	
-	if (my @new_objects = $dlg->NewModelObjects) {
-	    my $process_dialog = Wx::ProgressDialog->new('Loading…', "Loading new objects…", 100, $self, 0);
+        object              => $self->{objects}[$obj_idx],
+        model_object        => $self->{model}->objects->[$obj_idx],
+    );
+    return unless $dlg->ShowModal == wxID_OK;
+    
+    if (my @new_objects = $dlg->NewModelObjects) {
+        my $process_dialog = Wx::ProgressDialog->new('Loading…', "Loading new objects…", 100, $self, 0);
         $process_dialog->Pulse;
 
         # Create two models to save the current object and the resulted objects.
@@ -2649,12 +2649,12 @@ sub object_cut_dialog {
 
         $self->add_undo_operation("CUT", $object_id, $org_object_model, $new_objects_model, $new_objects_id_start);
 
-	    $self->remove($obj_idx, 'true');
-	    $self->load_model_objects(grep defined($_), @new_objects);
-	    $self->arrange if @new_objects <= 2; # don't arrange for grid cuts
-	    
-	    $process_dialog->Destroy;
-	}
+        $self->remove($obj_idx, 'true');
+        $self->load_model_objects(grep defined($_), @new_objects);
+        $self->arrange if @new_objects <= 2; # don't arrange for grid cuts
+        
+        $process_dialog->Destroy;
+    }
 }
 
 sub object_layers_dialog {
@@ -2679,28 +2679,28 @@ sub object_settings_dialog {
     return unless $self->validate_config;
     
     my $dlg = Slic3r::GUI::Plater::ObjectSettingsDialog->new($self,
-		object          => $self->{objects}[$obj_idx],
-		model_object    => $model_object,
-		obj_idx         => $obj_idx,
-	);
-	# store pointer to the adaptive layer tab to push preview updates
-	$self->{AdaptiveLayersDialog} = $dlg->{adaptive_layers};
-	# and jump directly to the tab if called by "promo-button"
-	$dlg->{tabpanel}->SetSelection(1) if $params{adaptive_layers};
-	$self->pause_background_process;
-	$dlg->ShowModal;
-	$self->{AdaptiveLayersDialog} = undef;
-	
+        object          => $self->{objects}[$obj_idx],
+        model_object    => $model_object,
+        obj_idx         => $obj_idx,
+    );
+    # store pointer to the adaptive layer tab to push preview updates
+    $self->{AdaptiveLayersDialog} = $dlg->{adaptive_layers};
+    # and jump directly to the tab if called by "promo-button"
+    $dlg->{tabpanel}->SetSelection(1) if $params{adaptive_layers};
+    $self->pause_background_process;
+    $dlg->ShowModal;
+    $self->{AdaptiveLayersDialog} = undef;
+    
     # update thumbnail since parts may have changed
     if ($dlg->PartsChanged) {
-	    # recenter and re-align to Z = 0
-	    $model_object->center_around_origin;
+        # recenter and re-align to Z = 0
+        $model_object->center_around_origin;
         $self->make_thumbnail($obj_idx);
     }
-	
-	# update print
-	if ($dlg->PartsChanged || $dlg->PartSettingsChanged) {
-	    $self->stop_background_process;
+    
+    # update print
+    if ($dlg->PartsChanged || $dlg->PartSettingsChanged) {
+        $self->stop_background_process;
         $self->{print}->reload_object($obj_idx);
         $self->on_model_change;
     } else {
@@ -2779,7 +2779,7 @@ sub selection_changed {
                     $self->{object_info_manifold_warning_icon}->Show;
                     
                     # we don't show normals_fixed because we never provide normals
-	                # to admesh, so it generates normals for all facets
+                    # to admesh, so it generates normals for all facets
                     my $message = sprintf '%d degenerate facets, %d edges fixed, %d facets removed, %d facets added, %d facets reversed, %d backwards edges',
                         @$stats{qw(degenerate_facets edges_fixed facets_removed facets_added facets_reversed backwards_edges)};
                     $self->{object_info_manifold}->SetToolTipString($message);
@@ -2852,7 +2852,7 @@ sub selected_object {
 sub refresh_canvases {
     my ($self) = @_;
     
-    $self->{canvas}->Refresh;
+    #$self->{canvas}->Refresh;
     $self->{canvas3D}->update if $self->{canvas3D};
     $self->{preview3D}->reload_print if $self->{preview3D};
 }
