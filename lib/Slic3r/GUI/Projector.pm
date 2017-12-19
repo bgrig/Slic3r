@@ -23,7 +23,7 @@ sub new {
         bottom_exposure_time    => 7,
         settle_time             => 1.5,
         bottom_layers           => 3,
-        z_lift                  => 5,
+        z_lift                  => 2,
         z_lift_speed            => 8,
         offset                  => [0,0],
     });
