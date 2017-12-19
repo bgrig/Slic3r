@@ -360,12 +360,11 @@ sub new {
         $presets->SetFlexibleDirection(wxHORIZONTAL);
         my %group_labels = (
             print       => 'Print settings',
-            filament    => 'Filament',
             printer     => 'Printer',
         );
         $self->{preset_choosers} = {};
         $self->{preset_choosers_names} = {};  # wxChoice* => []
-        for my $group (qw(print filament printer)) {
+        for my $group (qw(print printer)) {
             # label
             my $text = Wx::StaticText->new($self, -1, "$group_labels{$group}:", wxDefaultPosition, wxDefaultSize, wxALIGN_RIGHT);
             $text->SetFont($Slic3r::GUI::small_font);
@@ -552,7 +551,7 @@ sub new {
     }
     
     $self->load_presets;
-    $self->_on_select_preset($_) for qw(printer filament print);
+    $self->_on_select_preset($_) for qw(printer print);
     
     return $self;
 }
@@ -560,7 +559,7 @@ sub new {
 sub prompt_unsaved_changes {
     my ($self) = @_;
     
-    foreach my $group (qw(printer filament print)) {
+    foreach my $group (qw(printer print)) {
         foreach my $choice (@{$self->{preset_choosers}{$group}}) {
             my $pp = $self->{preset_choosers_names}{$choice};
             for my $i (0..$#$pp) {
@@ -622,7 +621,7 @@ sub _on_select_preset {
     # Ignore overrides in the plater, we only care about the preset configs.
     my $config = $self->config(1);
     
-    $self->on_extruders_change(scalar @{$config->get('nozzle_diameter')});
+    #$self->on_extruders_change(scalar @{$config->get('nozzle_diameter')});
     
     if ($group eq 'print') {
         my $o_config = $self->{settings_override_config};
@@ -670,25 +669,25 @@ sub load_presets {
     my ($self) = @_;
     
     my $selected_printer_name;
-    foreach my $group (qw(printer filament print)) {
+    foreach my $group (qw(printer print)) {
         my @presets = @{wxTheApp->presets->{$group}};
         
         # Skip presets not compatible with the selected printer, if they
         # have other compatible printers configured (and at least one of them exists).
-        if ($group eq 'filament' || $group eq 'print') {
-            my %printer_names = map { $_->name => 1 } @{ wxTheApp->presets->{printer} };
-            for (my $i = 0; $i <= $#presets; ++$i) {
-                my $config = $presets[$i]->dirty_config;
-                next if !$config->has('compatible_printers');
-                my @compat = @{$config->compatible_printers};
-                if (@compat
-                    && (none { $_ eq $selected_printer_name } @compat)
-                    && (any { $printer_names{$_} } @compat)) {
-                    splice @presets, $i, 1;
-                    --$i;
-                }
-            }
-        }
+        # if ($group eq 'filament' || $group eq 'print') {
+        #     my %printer_names = map { $_->name => 1 } @{ wxTheApp->presets->{printer} };
+        #     for (my $i = 0; $i <= $#presets; ++$i) {
+        #         my $config = $presets[$i]->dirty_config;
+        #         next if !$config->has('compatible_printers');
+        #         my @compat = @{$config->compatible_printers};
+        #         if (@compat
+        #             && (none { $_ eq $selected_printer_name } @compat)
+        #             && (any { $printer_names{$_} } @compat)) {
+        #             splice @presets, $i, 1;
+        #             --$i;
+        #         }
+        #     }
+        # }
         
         # Only show the default presets if we have no other presets.
         if (@presets > 1) {
@@ -780,7 +779,7 @@ sub selected_presets {
     my ($self, $group) = @_;
     
     my %presets = ();
-    foreach my $group (qw(printer filament print)) {
+    foreach my $group (qw(printer print)) {
         $presets{$group} = [];
         foreach my $choice (@{$self->{preset_choosers}{$group}}) {
             my $sel = $choice->GetSelection;
@@ -858,28 +857,28 @@ sub config {
     $config->apply(Slic3r::Config->new_from_defaults(@{$self->{config}->get_keys}));
     
     my %classes = map { $_ => "Slic3r::GUI::PresetEditor::".ucfirst($_) }
-        qw(print filament printer);
+        qw(print printer);
     
     my %presets = $self->selected_presets;
     $config->apply($_->dirty_config) for @{ $presets{printer} };
-    if (@{ $presets{filament} }) {
-        my $filament_config = $presets{filament}[0]->dirty_config;
+    # if (@{ $presets{filament} }) {
+    #     my $filament_config = $presets{filament}[0]->dirty_config;
         
-        for my $i (1..$#{ $presets{filament} }) {
-            my $preset = $presets{filament}[$i];
-            my $config = $preset->dirty_config;
-            foreach my $opt_key (@{$config->get_keys}) {
-                if ($filament_config->has($opt_key)) {
-                    my $value = $filament_config->get($opt_key);
-                    next unless ref $value eq 'ARRAY';
-                    $value->[$i] = $config->get($opt_key)->[0];
-                    $filament_config->set($opt_key, $value);
-                }
-            }
-        }
+    #     for my $i (1..$#{ $presets{filament} }) {
+    #         my $preset = $presets{filament}[$i];
+    #         my $config = $preset->dirty_config;
+    #         foreach my $opt_key (@{$config->get_keys}) {
+    #             if ($filament_config->has($opt_key)) {
+    #                 my $value = $filament_config->get($opt_key);
+    #                 next unless ref $value eq 'ARRAY';
+    #                 $value->[$i] = $config->get($opt_key)->[0];
+    #                 $filament_config->set($opt_key, $value);
+    #             }
+    #         }
+    #     }
         
-        $config->apply($filament_config);
-    }
+    #     $config->apply($filament_config);
+    # }
     $config->apply($_->dirty_config) for @{ $presets{print} };
     $config->apply($self->{settings_override_config})
         unless $ignore_overrides;
@@ -2176,9 +2175,9 @@ sub do_print {
     
     my $printer_panel = $controller->add_printer($current_presets{printer}->[0], $self->config);
     
-    my $filament_stats = $self->{print}->filament_stats;
-    $filament_stats = { map { $current_presets{filament}[$_]->name => $filament_stats->{$_} } keys %$filament_stats };
-    $printer_panel->load_print_job($self->{print_file}, $filament_stats);
+    # my $filament_stats = $self->{print}->filament_stats;
+    # $filament_stats = { map { $current_presets{filament}[$_]->name => $filament_stats->{$_} } keys %$filament_stats };
+    # $printer_panel->load_print_job($self->{print_file}, $filament_stats);
     
     $self->GetFrame->select_tab(1);
 }
@@ -2553,63 +2552,63 @@ sub hide_preview {
     $self->{processed} = 0;
 }
 
-sub on_extruders_change {
-    my ($self, $num_extruders) = @_;
+# sub on_extruders_change {
+#     my ($self, $num_extruders) = @_;
     
-    my $choices = $self->{preset_choosers}{filament};
-    while (@$choices < $num_extruders) {
-        # copy strings from first choice
-        my @presets = $choices->[0]->GetStrings;
+#     my $choices = $self->{preset_choosers}{filament};
+#     while (@$choices < $num_extruders) {
+#         # copy strings from first choice
+#         my @presets = $choices->[0]->GetStrings;
         
-        # initialize new choice
-        my $choice = Wx::BitmapComboBox->new($self, -1, "", wxDefaultPosition, wxDefaultSize, [@presets], wxCB_READONLY);
-        push @$choices, $choice;
+#         # initialize new choice
+#         my $choice = Wx::BitmapComboBox->new($self, -1, "", wxDefaultPosition, wxDefaultSize, [@presets], wxCB_READONLY);
+#         push @$choices, $choice;
         
-        # copy icons from first choice
-        $choice->SetItemBitmap($_, $choices->[0]->GetItemBitmap($_)) for 0..$#presets;
+#         # copy icons from first choice
+#         $choice->SetItemBitmap($_, $choices->[0]->GetItemBitmap($_)) for 0..$#presets;
         
-        # settings button
-        my $settings_btn = Wx::BitmapButton->new($self, -1, Wx::Bitmap->new($Slic3r::var->("cog.png"), wxBITMAP_TYPE_PNG), 
-            wxDefaultPosition, wxDefaultSize, wxBORDER_NONE);
+#         # settings button
+#         my $settings_btn = Wx::BitmapButton->new($self, -1, Wx::Bitmap->new($Slic3r::var->("cog.png"), wxBITMAP_TYPE_PNG), 
+#             wxDefaultPosition, wxDefaultSize, wxBORDER_NONE);
         
-        # insert new row into sizer
-        $self->{presets_sizer}->Insert(6 + ($#$choices-1)*3, 0, 0);
-        $self->{presets_sizer}->Insert(7 + ($#$choices-1)*3, $choice, 0, wxEXPAND | wxBOTTOM, FILAMENT_CHOOSERS_SPACING);
-        $self->{presets_sizer}->Insert(8 + ($#$choices-1)*3, $settings_btn, 0, wxEXPAND | wxLEFT, 4);
+#         # insert new row into sizer
+#         $self->{presets_sizer}->Insert(6 + ($#$choices-1)*3, 0, 0);
+#         $self->{presets_sizer}->Insert(7 + ($#$choices-1)*3, $choice, 0, wxEXPAND | wxBOTTOM, FILAMENT_CHOOSERS_SPACING);
+#         $self->{presets_sizer}->Insert(8 + ($#$choices-1)*3, $settings_btn, 0, wxEXPAND | wxLEFT, 4);
         
-        # setup the listeners
-        EVT_COMBOBOX($choice, $choice, sub {
-            my ($choice) = @_;
-            wxTheApp->CallAfter(sub {
-                $self->_on_change_combobox('filament', $choice);
-            });
-        });
+#         # setup the listeners
+#         EVT_COMBOBOX($choice, $choice, sub {
+#             my ($choice) = @_;
+#             wxTheApp->CallAfter(sub {
+#                 $self->_on_change_combobox('filament', $choice);
+#             });
+#         });
         
-        EVT_BUTTON($self, $settings_btn, sub {
-            $self->show_preset_editor('filament', $#$choices);
-        });
+#         EVT_BUTTON($self, $settings_btn, sub {
+#             $self->show_preset_editor('filament', $#$choices);
+#         });
         
-        # initialize selection
-        my $i = first { $choice->GetString($_) eq ($Slic3r::GUI::Settings->{presets}{"filament_" . $#$choices} || '') } 0 .. $#presets;
-        $choice->SetSelection($i || 0);
-    }
+#         # initialize selection
+#         my $i = first { $choice->GetString($_) eq ($Slic3r::GUI::Settings->{presets}{"filament_" . $#$choices} || '') } 0 .. $#presets;
+#         $choice->SetSelection($i || 0);
+#     }
     
-    # remove unused choices if any
-    while (@$choices > $num_extruders) {
-        my $i = 6 + ($#$choices-1)*3;
+#     # remove unused choices if any
+#     while (@$choices > $num_extruders) {
+#         my $i = 6 + ($#$choices-1)*3;
         
-        $self->{presets_sizer}->Remove($i);  # label
-        $self->{presets_sizer}->Remove($i);  # wxChoice
+#         $self->{presets_sizer}->Remove($i);  # label
+#         $self->{presets_sizer}->Remove($i);  # wxChoice
         
-        my $settings_btn = $self->{presets_sizer}->GetItem($i)->GetWindow;
-        $self->{presets_sizer}->Remove($i);  # settings btn
-        $settings_btn->Destroy;
+#         my $settings_btn = $self->{presets_sizer}->GetItem($i)->GetWindow;
+#         $self->{presets_sizer}->Remove($i);  # settings btn
+#         $settings_btn->Destroy;
         
-        $choices->[-1]->Destroy;
-        pop @$choices;
-    }
-    $self->Layout;
-}
+#         $choices->[-1]->Destroy;
+#         pop @$choices;
+#     }
+#     $self->Layout;
+# }
 
 sub object_cut_dialog {
     my $self = shift;
