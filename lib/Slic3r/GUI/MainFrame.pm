@@ -128,42 +128,6 @@ sub _init_menubar {
         wxTheApp->append_menu_item($fileMenu, "Open STL/OBJ/AMF/3MF…\tCtrl+O", 'Open a model', sub {
             $self->{plater}->add if $self->{plater};
         }, undef, 'brick_add.png');
-        wxTheApp->append_menu_item($fileMenu, "Open 2.5D TIN mesh…", 'Import a 2.5D TIN mesh', sub {
-            $self->{plater}->add_tin if $self->{plater};
-        }, undef, 'map_add.png');
-        $fileMenu->AppendSeparator();
-        wxTheApp->append_menu_item($fileMenu, "&Load Config…\tCtrl+L", 'Load exported configuration file', sub {
-            $self->load_config_file;
-        }, undef, 'plugin_add.png');
-        wxTheApp->append_menu_item($fileMenu, "&Export Config…\tCtrl+E", 'Export current configuration to file', sub {
-            $self->export_config;
-        }, undef, 'plugin_go.png');
-        wxTheApp->append_menu_item($fileMenu, "&Load Config Bundle…", 'Load presets from a bundle', sub {
-            $self->load_configbundle;
-        }, undef, 'lorry_add.png');
-        wxTheApp->append_menu_item($fileMenu, "&Export Config Bundle…", 'Export all presets to file', sub {
-            $self->export_configbundle;
-        }, undef, 'lorry_go.png');
-        $fileMenu->AppendSeparator();
-        my $repeat;
-        wxTheApp->append_menu_item($fileMenu, "Q&uick Slice…\tCtrl+U", 'Slice file', sub {
-            wxTheApp->CallAfter(sub {
-                $self->quick_slice;
-                $repeat->Enable(defined $Slic3r::GUI::MainFrame::last_input_file);
-            });
-        }, undef, 'cog_go.png');
-        wxTheApp->append_menu_item($fileMenu, "Quick Slice and Save &As…\tCtrl+Alt+U", 'Slice file and save as', sub {
-            wxTheApp->CallAfter(sub {
-                $self->quick_slice(save_as => 1);
-                $repeat->Enable(defined $Slic3r::GUI::MainFrame::last_input_file);
-            });
-        }, undef, 'cog_go.png');
-        $repeat = wxTheApp->append_menu_item($fileMenu, "&Repeat Last Quick Slice\tCtrl+Shift+U", 'Repeat last quick slice', sub {
-            wxTheApp->CallAfter(sub {
-                $self->quick_slice(reslice => 1);
-            });
-        }, undef, 'cog_go.png');
-        $repeat->Enable(0);
         $fileMenu->AppendSeparator();
         wxTheApp->append_menu_item($fileMenu, "Slice to SV&G…\tCtrl+G", 'Slice file to SVG', sub {
             $self->quick_slice(save_as => 1, export_svg => 1);
