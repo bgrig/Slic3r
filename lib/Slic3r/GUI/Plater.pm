@@ -226,7 +226,7 @@ sub new {
     $self->{btn_send_gcode} = Wx::Button->new($self, -1, "Send to printer", wxDefaultPosition, [-1, 30], wxBU_LEFT);
     $self->{btn_export_stl} = Wx::Button->new($self, -1, "Export STL…", wxDefaultPosition, [-1, 30], wxBU_LEFT);
     #$self->{btn_export_gcode}->SetFont($Slic3r::GUI::small_font);
-    #$self->{btn_export_stl}->SetFont($Slic3r::GUI::small_font);
+    $self->{btn_export_stl}->SetFont($Slic3r::GUI::small_font);
     $self->{btn_print}->Hide;
     $self->{btn_send_gcode}->Hide;
     
@@ -257,9 +257,9 @@ sub new {
     }
     $self->selection_changed(0);
     $self->object_list_changed;
-    EVT_BUTTON($self, $self->{btn_export_gcode}, sub {
-        $self->export_gcode;
-    });
+    # EVT_BUTTON($self, $self->{btn_export_gcode}, sub {
+    #     $self->export_gcode;
+    # });
     EVT_BUTTON($self, $self->{btn_print}, sub {
         $self->{print_file} = $self->export_gcode(Wx::StandardPaths::Get->GetTempDir());
     });
@@ -528,7 +528,7 @@ sub new {
         $buttons_sizer->Add($self->{btn_export_stl}, 0, wxALIGN_RIGHT, 0);
         $buttons_sizer->Add($self->{btn_print}, 0, wxALIGN_RIGHT, 0);
         $buttons_sizer->Add($self->{btn_send_gcode}, 0, wxALIGN_RIGHT, 0);
-        $buttons_sizer->Add($self->{btn_export_gcode}, 0, wxALIGN_RIGHT, 0);
+        #$buttons_sizer->Add($self->{btn_export_gcode}, 0, wxALIGN_RIGHT, 0);
         
         $self->{right_sizer} = my $right_sizer = Wx::BoxSizer->new(wxVERTICAL);
         $right_sizer->Add($presets, 0, wxEXPAND | wxTOP, 10) if defined $presets;
@@ -2968,13 +2968,13 @@ sub object_menu {
     wxTheApp->append_menu_item($menu, "Cut…", 'Open the 3D cutting tool', sub {
         $self->object_cut_dialog;
     }, undef, 'package.png');
-    wxTheApp->append_menu_item($menu, "Layer heights…", 'Open the dynamic layer height control', sub {
-        $self->object_layers_dialog;
-    }, undef, 'cog.png');
-    $menu->AppendSeparator();
-    wxTheApp->append_menu_item($menu, "Settings…", 'Open the object editor dialog', sub {
-        $self->object_settings_dialog;
-    }, undef, 'cog.png');
+    # wxTheApp->append_menu_item($menu, "Layer heights…", 'Open the dynamic layer height control', sub {
+    #     $self->object_layers_dialog;
+    # }, undef, 'cog.png');
+    # $menu->AppendSeparator();
+    # wxTheApp->append_menu_item($menu, "Settings…", 'Open the object editor dialog', sub {
+    #     $self->object_settings_dialog;
+    # }, undef, 'cog.png');
     $menu->AppendSeparator();
     wxTheApp->append_menu_item($menu, "Reload from Disk", 'Reload the selected file from Disk', sub {
         $self->reload_from_disk;
