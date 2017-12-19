@@ -232,9 +232,6 @@ sub _init_menubar {
         wxTheApp->append_menu_item($settingsMenu, "P&rint Settings…\tCtrl+1", 'Show the print settings editor', sub {
             $self->{plater}->show_preset_editor('print');
         }, undef, 'cog.png');
-        wxTheApp->append_menu_item($settingsMenu, "&Filament Settings…\tCtrl+2", 'Show the filament settings editor', sub {
-            $self->{plater}->show_preset_editor('filament');
-        }, undef, 'spool.png');
         wxTheApp->append_menu_item($settingsMenu, "Print&er Settings…\tCtrl+3", 'Show the printer settings editor', sub {
             $self->{plater}->show_preset_editor('printer');
         }, undef, 'printer_empty.png');
@@ -250,32 +247,6 @@ sub _init_menubar {
         wxTheApp->append_menu_item($self->{viewMenu}, "Front\tCtrl+8"   , 'Front View'   , sub { $self->select_view('front'   ); });
         wxTheApp->append_menu_item($self->{viewMenu}, "Back\tCtrl+9"    , 'Back View'    , sub { $self->select_view('back'    ); });
         wxTheApp->append_menu_item($self->{viewMenu}, "Diagonal\tCtrl+0", 'Diagonal View', sub { $self->select_view('diagonal'); });
-        $self->{viewMenu}->AppendSeparator();
-        $self->{color_toolpaths_by_role} = wxTheApp->append_menu_item($self->{viewMenu},
-            "Color Toolpaths by Role",
-            'Color toolpaths according to perimeter/infill/support material',
-            sub {
-                $Slic3r::GUI::Settings->{_}{color_toolpaths_by} = 'role';
-                wxTheApp->save_settings;
-                $self->{plater}{preview3D}->reload_print;
-            },
-            undef, undef, wxITEM_RADIO
-        );
-        $self->{color_toolpaths_by_extruder} = wxTheApp->append_menu_item($self->{viewMenu},
-            "Color Toolpaths by Filament",
-            'Color toolpaths using the configured extruder/filament color',
-            sub {
-                $Slic3r::GUI::Settings->{_}{color_toolpaths_by} = 'extruder';
-                wxTheApp->save_settings;
-                $self->{plater}{preview3D}->reload_print;
-            },
-            undef, undef, wxITEM_RADIO
-        );
-        if ($Slic3r::GUI::Settings->{_}{color_toolpaths_by} eq 'role') {
-            $self->{color_toolpaths_by_role}->Check(1);
-        } else {
-            $self->{color_toolpaths_by_extruder}->Check(1);
-        }
     }
     
     # Window menu
