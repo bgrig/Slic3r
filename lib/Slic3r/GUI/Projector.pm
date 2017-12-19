@@ -16,7 +16,7 @@ sub new {
     my $self = $class->SUPER::new($parent, -1, "Projector for DLP", wxDefaultPosition, wxDefaultSize);
     $self->config2({
         display                 => 0,
-        show_bed                => 1,
+        show_bed                => 0,
         invert_y                => 0,
         zoom                    => 100,
         exposure_time           => 2,
@@ -24,11 +24,12 @@ sub new {
         settle_time             => 1.5,
         bottom_layers           => 3,
         z_lift                  => 2,
-        z_lift_speed            => 8,
+        z_lift_speed            => 2, #speed for raising of Z-stage mm/s 
+        #z_retract_speed         => 1, #speed for lowering of Z-stage
         offset                  => [0,0],
     });
     $self->manual_control_config({
-        xy_travel_speed         => 130,
+        xy_travel_speed         => 130, #will most likely remove since printer only contains one axis
         z_travel_speed          => 10,
         temperature             => '',
         bed_temperature         => '',
@@ -265,6 +266,14 @@ sub new {
                 tooltip     => '',
                 default     => $self->config2->{z_lift_speed},
             ));
+            $line->append_option(Slic3r::GUI::OptionsGroup::Option->new(
+              opt_id      => 'z_retract_speed',
+              type        => 'f',
+              label       => 'Retract Speed',
+              sidetext    => 'mm/s',
+              tooltip     => '',
+              default     => $self->config2->{z_retract_speed},
+            ));
             $optgroup->append_line($line);
         }
     }
@@ -498,7 +507,7 @@ sub show_print_time {
     
     
     my $duration = $self->controller->print_time;
-    $self->_set_status(sprintf "Estimated print time: %d minutes and %d seconds - %.2f liters",
+    $self->_set_status(sprintf "Estimated print time: %d minutes and %d seconds - %.2f milliliters",
         int($duration/60), ($duration - int($duration/60)*60),  # % truncates to integer
         $self->controller->total_resin);
 }
@@ -749,7 +758,7 @@ sub total_resin {
         $vol += unscale(unscale($_->area)) * $lh for @{ $self->_print->layer_slices($i) };
     }
     
-    return $vol/1000/1000;  # liters
+    return $vol/1000;  # milliliters
 }
 
 sub DESTROY {
