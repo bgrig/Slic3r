@@ -209,9 +209,6 @@ sub _init_menubar {
         wxTheApp->append_menu_item($self->{plater_menu}, "Zoom Out\tCtrl+down", 'Zoom Out',
             sub { $self->{plater}->zoom('out') }, undef, 'zoom_out.png');
         $self->{plater_menu}->AppendSeparator();
-        wxTheApp->append_menu_item($self->{plater_menu}, "Export G-code...", 'Export current plate as G-code', sub {
-            $plater->export_gcode;
-        }, undef, 'cog_go.png');
         wxTheApp->append_menu_item($self->{plater_menu}, "Export plate as STL...", 'Export current plate as STL', sub {
             $plater->export_stl;
         }, undef, 'brick_go.png');
