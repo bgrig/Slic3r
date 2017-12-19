@@ -34,52 +34,58 @@ sub new {
         $optgroup->append_single_option_line('layer_height');
         $optgroup->append_single_option_line('first_layer_height');
     }
-    {
-        my $optgroup = $new_optgroup->('Infill');
-        $optgroup->append_single_option_line('fill_density');
-        $optgroup->append_single_option_line('fill_pattern');
-        {
-            my $line = $optgroup->create_single_option_line('perimeter_extrusion_width');
-            $line->label('Shell thickness');
-            my $opt = $line->get_options->[0];
-            $opt->sidetext('mm');
-            $opt->tooltip('Thickness of the external shell (both horizontal and vertical).');
-            $optgroup->append_line($line);
-        }
-        {
-            my $line = $optgroup->create_single_option_line('infill_extrusion_width');
-            $line->label('Infill thickness');
-            my $opt = $line->get_options->[0];
-            $opt->sidetext('mm');
-            $opt->tooltip('Thickness of the infill lines.');
-            $optgroup->append_line($line);
-        }
-        $optgroup->append_single_option_line('fill_angle');
-    }
-    {
-        my $optgroup = $new_optgroup->('Raft');
-        $optgroup->append_single_option_line('raft_layers');
-        $optgroup->append_single_option_line('raft_offset');
-    }
-    {
-        my $optgroup = $new_optgroup->('Support Material');
-        $optgroup->append_single_option_line('support_material');
-        {
-            my $line = $optgroup->create_single_option_line('support_material_spacing');
-            $line->label('Pillars spacing');
-            my $opt = $line->get_options->[0];
-            $opt->tooltip('Max spacing between support material pillars.');
-            $optgroup->append_line($line);
-        }
-        {
-            my $line = $optgroup->create_single_option_line('support_material_extrusion_width');
-            $line->label('Pillars diameter');
-            my $opt = $line->get_options->[0];
-            $opt->sidetext('mm');
-            $opt->tooltip('Diameter of the cylindrical support pillars.');
-            $optgroup->append_line($line);
-        }
-    }
+    # { #option for anti-aliasing for smoother layers
+    #     my $optgroup = $new_optgroup->('Anti-Aliasing');
+    #     $optgroup->append_single_option_line('');
+    #     $optgroup->append_single_option_line('');
+    # }
+
+    #{
+    #     my $optgroup = $new_optgroup->('Infill');
+    #     $optgroup->append_single_option_line('fill_density');
+    #     $optgroup->append_single_option_line('fill_pattern');
+    #     {
+    #         my $line = $optgroup->create_single_option_line('perimeter_extrusion_width');
+    #         $line->label('Shell thickness');
+    #         my $opt = $line->get_options->[0];
+    #         $opt->sidetext('mm');
+    #         $opt->tooltip('Thickness of the external shell (both horizontal and vertical).');
+    #         $optgroup->append_line($line);
+    #     }
+    #     {
+    #         my $line = $optgroup->create_single_option_line('infill_extrusion_width');
+    #         $line->label('Infill thickness');
+    #         my $opt = $line->get_options->[0];
+    #         $opt->sidetext('mm');
+    #         $opt->tooltip('Thickness of the infill lines.');
+    #         $optgroup->append_line($line);
+    #     }
+    #     $optgroup->append_single_option_line('fill_angle');
+    # }
+    # {
+    #     my $optgroup = $new_optgroup->('Raft');
+    #     $optgroup->append_single_option_line('raft_layers');
+    #     $optgroup->append_single_option_line('raft_offset');
+    # }
+    # {
+    #     my $optgroup = $new_optgroup->('Support Material');
+    #     $optgroup->append_single_option_line('support_material');
+    #     {
+    #         my $line = $optgroup->create_single_option_line('support_material_spacing');
+    #         $line->label('Pillars spacing');
+    #         my $opt = $line->get_options->[0];
+    #         $opt->tooltip('Max spacing between support material pillars.');
+    #         $optgroup->append_line($line);
+    #     }
+    #     {
+    #         my $line = $optgroup->create_single_option_line('support_material_extrusion_width');
+    #         $line->label('Pillars diameter');
+    #         my $opt = $line->get_options->[0];
+    #         $opt->sidetext('mm');
+    #         $opt->tooltip('Diameter of the cylindrical support pillars.');
+    #         $optgroup->append_line($line);
+    #     }
+    # }
     
     
     my $buttons = $self->CreateStdDialogButtonSizer(wxOK | wxCANCEL);
