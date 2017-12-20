@@ -440,7 +440,6 @@ sub options {
         perimeters spiral_vase
         top_solid_layers bottom_solid_layers
         extra_perimeters avoid_crossing_perimeters thin_walls overhangs
-        seam_position external_perimeters_first
         fill_density fill_pattern top_infill_pattern bottom_infill_pattern fill_gaps
         infill_every_layers infill_only_where_needed
         solid_infill_every_layers fill_angle solid_infill_below_area 
@@ -460,7 +459,6 @@ sub options {
         support_material_pattern support_material_spacing support_material_angle 
         support_material_interface_layers support_material_interface_spacing
         support_material_contact_distance support_material_buildplate_only dont_support_bridges
-        notes
         complete_objects extruder_clearance_radius extruder_clearance_height
         gcode_comments output_filename_format
         post_process
@@ -469,7 +467,7 @@ sub options {
         ooze_prevention standby_temperature_delta
         interface_shells regions_overlap
         extrusion_width first_layer_extrusion_width perimeter_extrusion_width 
-        external_perimeter_extrusion_width infill_extrusion_width solid_infill_extrusion_width 
+        infill_extrusion_width solid_infill_extrusion_width 
         top_infill_extrusion_width support_material_extrusion_width
         support_material_interface_extrusion_width infill_overlap bridge_flow_ratio
         xy_size_compensation resolution shortcuts compatible_printers
@@ -533,11 +531,6 @@ sub build {
             $optgroup->append_single_option_line('avoid_crossing_perimeters');
             $optgroup->append_single_option_line('thin_walls');
             $optgroup->append_single_option_line('overhangs');
-        }
-        {
-            my $optgroup = $page->new_optgroup('Advanced');
-            $optgroup->append_single_option_line('seam_position');
-            $optgroup->append_single_option_line('external_perimeters_first');
         }
     }
     
@@ -677,9 +670,7 @@ sub build {
                 label_width => 180,
             );
             $optgroup->append_single_option_line($_, undef, width => 100)
-                for qw(extrusion_width first_layer_extrusion_width
-                    perimeter_extrusion_width external_perimeter_extrusion_width
-                    infill_extrusion_width solid_infill_extrusion_width
+                for qw(infill_extrusion_width solid_infill_extrusion_width
                     top_infill_extrusion_width support_material_interface_extrusion_width 
                     support_material_extrusion_width);
         }
@@ -734,18 +725,6 @@ sub build {
         }
     }
     
-    {
-        my $page = $self->add_options_page('Notes', 'note.png');
-        {
-            my $optgroup = $page->new_optgroup('Notes',
-                label_width => 0,
-            );
-            my $option = $optgroup->get_option('notes');
-            $option->full_width(1);
-            $option->height(250);
-            $optgroup->append_single_option_line($option);
-        }
-    }
     
     {
         my $page = $self->add_options_page('Shortcuts', 'wrench.png');
@@ -862,8 +841,7 @@ sub _update {
     
     my $have_perimeters = $config->perimeters > 0;
     $self->get_field($_)->toggle($have_perimeters)
-        for qw(extra_perimeters thin_walls overhangs seam_position external_perimeters_first
-            external_perimeter_extrusion_width
+        for qw(extra_perimeters thin_walls overhangs 
             perimeter_speed small_perimeter_speed external_perimeter_speed);
 
    
@@ -921,7 +899,6 @@ sub _update {
         for qw(support_material_interface_spacing support_material_interface_extruder
             support_material_interface_speed);
     
-    $self->get_field('perimeter_extrusion_width')->toggle($have_perimeters || $have_skirt || $have_brim);
     $self->get_field('support_material_extruder')->toggle($have_support_material || $have_skirt);
     $self->get_field('support_material_speed')->toggle($have_support_material || $have_brim || $have_skirt);
     
@@ -1206,7 +1183,6 @@ sub options {
         retract_length retract_lift retract_speed retract_restart_extra retract_before_travel retract_layer_change wipe
         retract_length_toolchange retract_restart_extra_toolchange retract_lift_above retract_lift_below
         printer_settings_id
-        printer_notes
     );
 }
 
@@ -1417,18 +1393,7 @@ sub build {
 
     $self->{extruder_pages} = [];
     $self->_build_extruder_pages;
-    {
-        my $page = $self->add_options_page('Notes', 'note.png');
-        {
-            my $optgroup = $page->new_optgroup('Notes',
-                label_width => 0,
-            );
-            my $option = $optgroup->get_option('printer_notes');
-            $option->full_width(1);
-            $option->height(250);
-            $optgroup->append_single_option_line($option);
-        }
-    }
+
     $self->_update_serial_ports;
 }
 
